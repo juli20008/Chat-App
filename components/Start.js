@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -14,39 +14,45 @@ const Start = ({ navigation }) => {
 
   return (
     <ImageBackground source={require('../assets/background.jpg')} style={styles.background}>
-       <View style={styles.container}><Text style={styles.appTitle}>Chat App</Text></View> 
-
-      <View style={[styles.container,styles.buttonPaddedBackground]}>
-        <Text style={styles.label}>Your name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          placeholderTextColor="rgba(117, 112, 131, 0.5)"
-          onChangeText={setName}
-        />
-        <Text style={styles.label}>Choose background color</Text>
-        <View style={styles.colorOptions}>
-        <TouchableOpacity
-        style={[styles.colorOption, { backgroundColor: '#090C08' }]}
-        onPress={() => setBackgroundColor('#090C08')}
-        />
-        <TouchableOpacity
-            style={[styles.colorOption, { backgroundColor: '#474056' }]}
-            onPress={() => setBackgroundColor('#474056')}
-        />
-        <TouchableOpacity
-            style={[styles.colorOption, { backgroundColor: '#8A95A5' }]}
-            onPress={() => setBackgroundColor('#8A95A5')}
-        />
-        <TouchableOpacity
-            style={[styles.colorOption, { backgroundColor: '#B9C6AE' }]}
-            onPress={() => setBackgroundColor('#B9C6AE')}
-        />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.innerContainer}>
+          <Text style={styles.appTitle}>Chat App</Text>
+          <View style={styles.paddedBackground}>
+            <Text style={styles.label}>Your name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your name"
+              placeholderTextColor="rgba(117, 112, 131, 0.5)"
+              onChangeText={setName}
+            />
+            <Text style={styles.label}>Choose background color</Text>
+            <View style={styles.colorOptions}>
+            <TouchableOpacity
+            style={[styles.colorOption, { backgroundColor: '#090C08' }]}
+            onPress={() => setBackgroundColor('#090C08')}
+            />
+            <TouchableOpacity
+                style={[styles.colorOption, { backgroundColor: '#474056' }]}
+                onPress={() => setBackgroundColor('#474056')}
+            />
+            <TouchableOpacity
+                style={[styles.colorOption, { backgroundColor: '#8A95A5' }]}
+                onPress={() => setBackgroundColor('#8A95A5')}
+            />
+            <TouchableOpacity
+                style={[styles.colorOption, { backgroundColor: '#B9C6AE' }]}
+                onPress={() => setBackgroundColor('#B9C6AE')}
+            />
+            </View>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={handleEnterChat}>
+            <Text style={styles.buttonText}>Start Chatting</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleEnterChat}>
-          <Text style={styles.buttonText}>Start Chatting</Text>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
@@ -62,6 +68,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   appTitle: {
     fontSize: 45,
