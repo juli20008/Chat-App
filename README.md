@@ -26,62 +26,21 @@ The Chat App offers the following features:
 
 Follow these steps to set up the application:
 
-1. Ensure your Node.js version is compatible with Expo:
-   
-   ```bash
-   npm install 16.19.0
-   npm use 16.19.0
-   npm alias default 16.19.0
-Install Expo CLI globally:
-
-bash
-Copy code
+```shell
+# Install Expo CLI globally
 npm install -g expo-cli
-Create an Expo account at https://expo.dev/ and install the Expo Go app on your smartphone or set up a virtual machine on your computer.
 
-Create a new React Native project using Expo:
+# Create an Expo account at https://expo.dev/ and install Expo Go app
+# on your smartphone or set up a virtual machine on your computer.
 
-bash
-Copy code
+# Create a new React Native project using Expo
 npx create-expo-app ChattyApp --template
-Start Expo:
 
-bash
-Copy code
+# Start Expo
 npm start
-Install the required dependency to fix image sending issues:
 
-bash
-Copy code
+# Install the required dependency to fix image sending issues
 npm i whatwg-fetch@3.6.2
-Sync the Metro Bundler with your smartphone using the Expo Go app or an emulator to preview the app.
 
-Database Configuration
-If you want to use your own database:
-
-Create a new database on Firebase (sign up required).
-
-Install Firebase:
-
-bash
-Copy code
-npm i firebase
-In the Firebase Console:
-
-Add a new project.
-Navigate to "Build" > "Firestore Database" and create a new database in production mode.
-Go to "Project Settings" > "General" > "Your apps" > web app (</>) and follow the prompts to create a Firebase web app.
-Copy the configuration code (starting with const firebaseConfig =) from the setup and replace it in App.js.
-Set up Android Studio
-If you wish to use all features of the app, install the necessary libraries:
-
-bash
-Copy code
-expo install expo-image-picker
-expo install react-native-maps
-expo install expo-location
-expo install expo-media-library
-GitHub Repository
-Explore the source code and more on our GitHub repository.
-
-Feel free to contribute, raise issues, or use the code as a reference for your own projects. Happy coding! 🚀
+# Sync the Metro Bundler with your smartphone using Expo Go app
+# or an emulator to preview the app.
