@@ -71,7 +71,7 @@ expo install expo-media-library
 
 ## GitHub Repository
 
-Explore the source code and more on our GitHub repository.
+Explore the source code and more on our [GitHub repository](https://github.com/juli20008/chat).
 
 Feel free to contribute, raise issues, or use the code as a reference for your own projects. Happy coding! 🚀
 
