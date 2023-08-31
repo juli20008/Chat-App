@@ -1,8 +1,6 @@
 //components/Chat.js
-import { ref, uploadBytes, getDownloadURL } from "@firebase/storage"; // Add these imports
-//import { getStorage } from '@firebase/storage'; // Import the appropriate method from your Firebase storage setup 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Platform, FlatList,Text,KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import { collection, addDoc, onSnapshot,query, orderBy } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,12 +8,8 @@ import CustomActions from './CustomActions';
 import MapView from 'react-native-maps';
 
 const Chat = ({ db, storage, route, navigation, isConnected }) => {
-  const { name, userID } = route.params;
+  const { name, backgroundColor,userID } = route.params;
   const [messages, setMessages] = useState([]);
- // const [location, setLocation] = useState(null); // Define the location state
-
-  // Define the storage variable
-  //const storage = getStorage(); // Replace with your actual method to get the storage instance
 
   let unsubMessages;
 
@@ -28,7 +22,7 @@ const Chat = ({ db, storage, route, navigation, isConnected }) => {
       unsubMessages = null;
 
       const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-      unsubMessages = onSnapshot(q, (docs) => {
+        unsubMessages = onSnapshot(q, (docs) => {
         let newMessages = [];
         docs.forEach(doc => {
           newMessages.push({
@@ -61,23 +55,7 @@ const Chat = ({ db, storage, route, navigation, isConnected }) => {
   }    
 
   const onSend = async (newMessages) => {
-    const message = newMessages[0];
-    
-    if (message.text) {
-      // Handle sending text messages
-      await addDoc(collection(db, "messages"), {
-        text: message.text,
-        createdAt: new Date(),
-        user: {
-          _id: userID,
-          name: name
-        }
-      });
-    }     else if (message.image) {
-      // Handle sending image messages
-      const imageURL = message.image;
-      await uploadAndSendImage(imageURL);
-    }
+    addDoc(collection(db, "messages"), newMessages[0])
   };
 
   const renderBubble = (props) => {
@@ -105,7 +83,10 @@ const renderInputToolbar = (props) => {
 }
 
   const renderCustomActions = (props) => {
-    return <CustomActions storage={storage} onSend={onSend} userID={userID} />;
+    return <CustomActions 
+        storage={storage} 
+        userID={userID} 
+        {...props}/>;
   };
 
   const renderCustomView = (props) => {
@@ -130,15 +111,16 @@ const renderInputToolbar = (props) => {
   }
 
   return (
-    <View style={[ styles.container ]}>
-       <GiftedChat
-        key={messages.length} // Add this key
+    <View style={[styles.container, { backgroundColor: backgroundColor }
+    ]}
+    >
+      <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
-        onSend={onSend} // Pass the function, no need to invoke it
-        renderActions={renderCustomActions} // Just pass the function, not invoking it
+        renderActions={renderCustomActions}
         renderCustomView={renderCustomView}
+        onSend={messages => onSend(messages)}
         user={{
           _id: userID,
           name

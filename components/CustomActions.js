@@ -6,14 +6,9 @@ import React, { useState } from 'react';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 
-
 const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, userID }) => {
 
-    const actionSheet = useActionSheet();
- //   const [image, setImage] = useState(null);
-  //  const [location, setLocation] = useState(null);
-  //  const newUploadRef = ref(storage, 'image123');
-
+const actionSheet = useActionSheet();
 const onActionPress = () => {
     const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
     const cancelButtonIndex = options.length - 1;
@@ -33,7 +28,7 @@ const onActionPress = () => {
             return;
           case 2:
             getLocation();
-            return; // Add this line
+            return; 
           default:
         }
       },
@@ -50,7 +45,8 @@ const onActionPress = () => {
   };
 
   const pickImage = async () => {
-    let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync(
+    );
     if (permissions?.granted) {
       let result = await ImagePicker.launchImageLibraryAsync();
       if (!result.canceled) await uploadAndSendImage(result.assets[0].uri);
@@ -69,8 +65,10 @@ const onActionPress = () => {
     const uniqueRefString = generateReference(imageURI);
     const newUploadRef = ref(storage, uniqueRefString);
     const response = await fetch(imageURI);
-    const blob = await response.blob();
+    //converts image to Blob format
+    const blob = await response.blob();    
     uploadBytes(newUploadRef, blob).then(async (snapshot) => {
+      console.log('File has been uploaded successfully');
       const imageURL = await getDownloadURL(snapshot.ref)
       onSend([{ image: imageURL }])
     });
@@ -95,7 +93,9 @@ const onActionPress = () => {
   return (
     <TouchableOpacity style={styles.container} onPress={onActionPress}> 
       <View style={[styles.wrapper, wrapperStyle]}>
-        <Text style={[styles.iconText, iconTextStyle]}>+</Text>
+        <Text style={[styles.iconText, iconTextStyle]}>
+          +
+        </Text>
       </View>
     </TouchableOpacity>
   );

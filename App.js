@@ -20,6 +20,15 @@ LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 const App = () => {
   const connectionStatus = useNetInfo();
 
+  useEffect(() => {
+    if (connectionStatus.isConnected === false) {
+      Alert.alert("Connection Lost!");
+      disableNetwork(db);
+    } else if (connectionStatus.isConnected === true) {
+      enableNetwork(db);
+    }
+  }, [connectionStatus.isConnected]);
+  
   const firebaseConfig = {
     apiKey: "AIzaSyBdSeoPR7lLSoSe4ylaiB02KCx-NqfCNcg",
     authDomain: "chatapp-f3de2.firebaseapp.com",
@@ -35,14 +44,7 @@ const App = () => {
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    useEffect(() => {
-      if (connectionStatus.isConnected === false) {
-        Alert.alert("Connection Lost!");
-        disableNetwork(db);
-      } else if (connectionStatus.isConnected === true) {
-        enableNetwork(db);
-      }
-    }, [connectionStatus.isConnected]);
+
 
     return (
       <NavigationContainer>
