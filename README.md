@@ -1,63 +1,34 @@
-Chat App
-This project aims at creating an App for mobile devices using React Native. The app will provide users with a chat interface and options to share images and their location.
+# Chat App
 
-Technologies Used
-React Native
-Expo (toolchain to write native apps in JS)
-React Native Gifted Chat library
-Google Firestore DB
-Google Firebase Authentication
-AsyncStorage caching for offline use
-Firebase cloud storage (for storing images)
-Expo ImagePicker & MediaLibrary for integrating communication features
-Key Features
-A page where users can enter their name and choose a background color for the chat screen before joining the chat.
-A page displaying the conversation, as well as an input field and submit button.
-The chat must provide users with two additional communication features: sending images and location data.
-Data gets stored online and offline.
-How to set up the application
-As this application requires react native and is developped with Expo, the first step involves downgrading (if necessary) to a node version compatible with Expo:
-npm install 16.19.0
-npm use 16.19.0
-npm alias default 16.19.0
-Next, install expo CLI on your machine:
+Welcome to the Chat App project! This repository contains the source code for a mobile application built using React Native. The app's main focus is to provide users with a chat interface along with the ability to share images and their location.
 
-npm install -g expo-cli
-Then create an expo account (https://expo.dev/), and either install expo on your smartphone, or install a virtual machine on your computer.
+## Technologies Used
 
-Create a react native line by running this command:
-npx create-expo-app ChattyApp --template
+- React Native
+- Expo (toolchain for building native apps in JavaScript)
+- React Native Gifted Chat library
+- Google Firestore DB
+- Google Firebase Authentication
+- AsyncStorage caching for offline use
+- Firebase Cloud Storage (for storing images)
+- Expo ImagePicker & MediaLibrary for communication features
 
-Run expo:
+## Key Features
 
-npm start, or expo start
+The Chat App offers the following features:
 
-Run 'npm i whatwg-fetch@3.6.2' (current whatwg version causes issues with images being able to be sent. This version still functions as intended.)
+1. **User Profile Setup:** Users can set their display name and choose a background color for the chat screen before entering the chat.
+2. **Chat Interface:** The app displays the conversation thread, an input field, and a submit button.
+3. **Communication Options:** Users can send images and share location data within the chat.
+4. **Data Persistence:** Messages and other data are stored both online and offline, ensuring a seamless experience.
 
-sync Metro Bundler either with your smartphone (you will need to install the expoGo app) or using your device emulator to see the app live.
+## Getting Started
 
-Database configuration
-If you wish to use your own database for this project, then create a new database on https://firebase.google.com (signup is required first).
+Follow these steps to set up the application:
 
-then run 'npm i firebase'
+1. Ensure your Node.js version is compatible with Expo:
 
-Navigate to the console ('Go To Console' in the top right)
-Add project
-Once in the project use 'Build->Firestore Database' on the left sid eof the screen under product categories
-Create Database, Start in production mode, hit next and then enable.
-Once in Firestore Database navigate to rules and change 'allow read, write: if false;' to 'allow read, write: if true;' and publish.
-Navigate to 'Project Settings->General'
-Under 'Your apps' select webapp (</>)
-Select a nickname (you don't have to setup Firebase Hosting) and follow the prompts.
-Copy the section of code starting with 'const firebaseConfig =' and paste it into App.js replacing what is in there already. const firebaseConfig = { [your unique credentials] };
-Set up Android Studio
-
-necessary libraries to install
-If you want to use all of the features of this app, you will need to run:
-
-expo install expo-image-picker
-expo install react-native-maps
-expo install expo-location
-expo install expo-media-library
-Github Link
-https://github.com/juli20008/chat
+   ```bash
+   npm install 16.19.0
+   npm use 16.19.0
+   npm alias default 16.19.0
