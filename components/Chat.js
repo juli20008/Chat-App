@@ -1,78 +1,62 @@
 //components/Chat.js
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Platform, FlatList,Text,KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
-import { collection, getDocs, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, onSnapshot,query, orderBy } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo"; // Assuming you're using NetInfo for connection status 
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
-const Chat = ({ db, route }) => {
-  const { name, _id } = route.params;
+const Chat = ({ db, storage, route, navigation, isConnected }) => {
+  const { name, backgroundColor,userID } = route.params;
   const [messages, setMessages] = useState([]);
-  const [isConnected, setIsConnected] = useState(false); // Set the initial connection status
+
+  let unsubMessages;
 
   useEffect(() => {
-    const unsubscribeNetInfo = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected);
-    });
+    navigation.setOptions({ title: name });
+
+    if (isConnected === true) {
+
+      if (unsubMessages) unsubMessages();
+      unsubMessages = null;
+
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+        unsubMessages = onSnapshot(q, (docs) => {
+        let newMessages = [];
+        docs.forEach(doc => {
+          newMessages.push({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          })
+        })
+        cacheMessages(newMessages);
+        setMessages(newMessages);
+      })
+    } else loadCachedMessages();
 
     return () => {
-      if (unsubscribeNetInfo) unsubscribeNetInfo();
-    };
-  }, []);
+      if (unsubMessages) unsubMessages();
+    }
+  }, [isConnected]);
 
-  useEffect(() => {
-    if (isConnected) {
-      const unsubMessages = onSnapshot(collection(db, "messages"), async querySnapshot => {
-        const newMessages = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            _id: doc.id,
-            text: data.text,
-            createdAt: data.createdAt.toDate(),
-            user: {
-              _id: data.user._id,
-              name: data.user.name,
-              avatar: data.user.avatar,
-            },
-          };
-        });
-
-    // Sort messages by createdAt in descending order
-    newMessages.sort((a, b) => b.createdAt - a.createdAt);
-      setMessages(newMessages);
-
-            // Cache messages in AsyncStorage
-            try {
-              await AsyncStorage.setItem('cachedMessages', JSON.stringify(newMessages));
-            } catch (error) {
-              console.log(error.message);
-            }
-          });
-
-
-      return () => {
-            if (unsubMessages) unsubMessages();
-          };
-        } else {
-          // Load cached messages from AsyncStorage
-          AsyncStorage.getItem('cachedMessages')
-            .then(cachedMessages => {
-              if (cachedMessages) {
-                setMessages(JSON.parse(cachedMessages));
-              }
-            })
-            .catch(error => {
-              console.log(error.message);
-            });
-        }
-      }, [db, isConnected]);
-    
-
-  const onSend = (newMessages) => {
-    addDoc(collection(db, "messages"), newMessages[0])
+  const loadCachedMessages = async () => {
+    const cachedMessages = await AsyncStorage.getItem("messages") || [];
+    setMessages(JSON.parse(cachedMessages));
   }
 
+  const cacheMessages = async (messagesToCache) => {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(messagesToCache));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }    
+
+  const onSend = async (newMessages) => {
+    addDoc(collection(db, "messages"), newMessages[0])
+  };
 
   const renderBubble = (props) => {
     return (
@@ -89,25 +73,57 @@ const Chat = ({ db, route }) => {
       />
     );
   };
+// Define a custom InputToolbar component
 
-  const renderInputToolbar = (props) => {
-    if (isConnected) {
-      return <InputToolbar {...props} />;
-    } else {
-      return null;
-    }
+const renderInputToolbar = (props) => {
+  if (isConnected === true) 
+  return <InputToolbar 
+  {...props} />;
+  else return null;
+}
+
+  const renderCustomActions = (props) => {
+    return <CustomActions 
+        storage={storage} 
+        userID={userID} 
+        {...props}/>;
   };
 
+  const renderCustomView = (props) => {
+    const { currentMessage} = props;
+    if (currentMessage.location) {
+      return (
+          <MapView
+            style={{width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3}}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+      );
+    }
+    return null;
+  }
+
   return (
-    <View style={[ styles.container ]}>
-       <GiftedChat
+    <View style={[styles.container, { backgroundColor: backgroundColor }
+    ]}
+    >
+      <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
-        renderInputToolbar={renderInputToolbar} // Add this line
-        onSend={(messages) => onSend(messages)}
+        renderInputToolbar={renderInputToolbar}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
+        onSend={messages => onSend(messages)}
         user={{
-          _id: _id,
-          name: name,
+          _id: userID,
+          name
         }}
       />
       {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
@@ -115,10 +131,24 @@ const Chat = ({ db, route }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
+  logoutButton: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    backgroundColor: "#C00",
+    padding: 10,
+    zIndex: 1
+  },
+  logoutButtonText: {
+    color: "#FFF",
+    fontSize: 10
+  }
 });
+
 
 export default Chat;
