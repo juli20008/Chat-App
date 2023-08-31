@@ -2,6 +2,8 @@
 
 Welcome to the Chat App project! This repository contains the source code for a mobile application built using React Native. The app's main focus is to provide users with a chat interface along with the ability to share images and their location.
 
+![IMG_1902](https://github.com/juli20008/chat/assets/18193705/7a76b369-fb19-4a34-8e98-ed13c6ca140e)
+
 ## Technologies Used
 
 - React Native
